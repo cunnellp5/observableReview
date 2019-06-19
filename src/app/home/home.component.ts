@@ -12,19 +12,27 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor() { }
 
   ngOnInit() {
-    // this.firstObsSubscription = interval(1000).subscribe(count => {
-    //   console.log(count);
-    // });
     const customIntervalObservable = Observable.create(observer => {
       let count = 0;
       setInterval(() => {
         observer.next(count);
+        if (count === 5) {
+          observer.complete();
+        }
+        if (count > 3) {
+          observer.error(new Error('Count is greater than 3!'));
+        }
         count++;
       }, 1000);
     });
 
     this.firstObsSubscription = customIntervalObservable.subscribe(data => {
       console.log(data);
+    }, error => {
+      console.error(error);
+      alert(error.message);
+    }, () => {
+      console.log('COMPLETED!');
     });
   }
 
@@ -33,3 +41,4 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
 }
+// errors cancel observables and doesnt 'complete' them;
